@@ -1,6 +1,6 @@
-client.o: client.h user.h client.cpp
+client.o: client.h user.h transfer.h file.h client.cpp
 
-user.o: client.h user.h user.cpp
+user.o: client.h user.h file.h user.cpp
 
 file.o: transfer.h file.h file.cpp
 
