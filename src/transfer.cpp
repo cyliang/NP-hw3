@@ -32,6 +32,9 @@ void TransferringList::pushJob(Job::Type type, int fd, void *buf, size_t n, Call
 	newJob.buf = buf;
 	newJob.n = n;
 
+	int fflag = fcntl(fd, F_GETFL, 0);
+	fcntl(fd, F_SETFL, fflag | O_NONBLOCK);
+
 	jobList.push_front(newJob);
 	if(fd > max_fd)
 		max_fd = fd;
@@ -56,10 +59,10 @@ int TransferringList::setCheckSet(fd_set *rSet, fd_set *wSet) {
 
 void TransferringList::checkDone(fd_set *rSet, fd_set *wSet) {
 	for(list<Job>::iterator it = jobList.begin(); it != jobList.end(); ) {
-		ssize_t n;
-		if(it->type == Job::READ)
+		ssize_t n = -1;
+		if(it->type == Job::READ && FD_ISSET(it->fd, rSet))
 			n = read(it->fd, it->buf, it->n);
-		else
+		else if(it->type == Job::WRITE && FD_ISSET(it->fd, wSet))
 			n = write(it->fd, it->buf, it->n);
 
 		if(n == -1) {

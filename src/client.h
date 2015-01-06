@@ -11,6 +11,8 @@ public:
 	Client(int sockfd);
 	~Client();
 
+	static void checkPullFile();
+
 	static void recvUsername(void *, ssize_t);
 	static void recvCmd(void *, ssize_t);
 	static void finishSendCmd(void *, ssize_t);

@@ -15,7 +15,7 @@ using namespace std;
 unsigned int File::nextID = 0;
 char File::rootPath[30];
 bool File::isInit = false;
-list<File *> waitFreeFiles;
+list<File *> File::waitFreeFiles;
 
 extern TransferringList transferringList;
 
@@ -85,7 +85,7 @@ void File::writeCallback(void *arg, ssize_t n) {
 	close(fPtr->writeFd);
 }
 
-const void *File::readFile() {
+void *File::readFile() {
 	if(isOpen) {
 		if(isFreeing) {
 			waitFreeFiles.erase(waitFreeIt);
