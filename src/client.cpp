@@ -114,6 +114,12 @@ void Client::finishTransfer(void *arg, ssize_t n) {
 	free(ptr);
 }
 
+void Client::checkPullFile() {
+	for(list<Client *>::iterator it = allClient.begin(); it != allClient.end(); ++it) {
+		(*it)->pullFile();
+	}
+}
+
 void Client::pullFile() {
 	if(isSending || pullList.empty() || fileTransferring >= 5)
 		return;
