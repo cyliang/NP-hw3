@@ -18,8 +18,6 @@ static void pushAcceptJob();
 static void acceptingClient(void *, ssize_t);
 
 int main(int argc, char *argv[]) {
-	/* TODO: Print Usage */
-#warning "TODO: Print Usage"
 	if(argc != 2) {
 		fprintf(stderr, "Usage: %s <port>\n", argv[0]);
 		exit(1);
@@ -34,7 +32,7 @@ int main(int argc, char *argv[]) {
 	memset(&listen_addr, 0, sizeof(listen_addr));
 	listen_addr.sin_family = AF_INET;
 	listen_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	listen_addr.sin_port = htons(atoi(/* TODO: port arg */argv[1]));
+	listen_addr.sin_port = htons(atoi(argv[1]));
 
 	listenFd = socket(AF_INET, SOCK_STREAM, 0);
 	if(listenFd == -1) {

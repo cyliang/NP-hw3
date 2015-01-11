@@ -1,6 +1,10 @@
 .PHONY: all clean server.exe client.exe
 
-all: server.exe
+export
+CXXFLAGS = -o2 -g
+
+
+all: server.exe client.exe
 
 server.exe:
 	rm -f server.exe
@@ -14,6 +18,6 @@ client.exe:
 
 clean:
 	$(MAKE) -C src/server clean
-	#$(MAKE) -C src/client clean
+	$(MAKE) -C src/client clean
 	@rm -f server.exe client.exe
 	@echo Cleaned
