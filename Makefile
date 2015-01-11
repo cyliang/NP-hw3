@@ -1,10 +1,14 @@
 .PHONY: all clean server.exe client.exe
 
 export
-CXXFLAGS = -o2 -g
+CXXFLAGS = 
 
 
 all: server.exe client.exe
+	@echo -e '\n' \
+		'\033[1;33m*******************************\033[m\n' \
+		'\033[1;33m/ Make performed successfully /\033[m\n' \
+		'\033[1;33m*******************************\033[m'
 
 server.exe:
 	rm -f server.exe

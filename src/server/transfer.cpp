@@ -60,16 +60,24 @@ int TransferringList::setCheckSet(fd_set *rSet, fd_set *wSet) {
 void TransferringList::checkDone(fd_set *rSet, fd_set *wSet) {
 	for(list<Job>::iterator it = jobList.begin(); it != jobList.end(); ) {
 		ssize_t n = -1;
-		if(it->type == Job::READ && FD_ISSET(it->fd, rSet))
-			n = read(it->fd, it->buf, it->n);
-		else if(it->type == Job::WRITE && FD_ISSET(it->fd, wSet))
-			n = write(it->fd, it->buf, it->n);
+		if(it->type == Job::READ && FD_ISSET(it->fd, rSet)) {
+			n = read(it->fd, it->buf + it->total, it->n - it->total);
+			
+			if(n == 0) {
+				(*it->callback)(it->callbackArg, 0);
+				jobList.erase(it++);
+				continue;
+			}
 
-		if(n == -1) {
+		} else if(it->type == Job::WRITE && FD_ISSET(it->fd, wSet)) {
+			n = write(it->fd, it->buf + it->total, it->n - it->total);
+		}
+
+		if(n == -1 || (it->total += n) != it->n) {
 			++it;
 		} else {
 			/* Job has finished */
-			(*it->callback)(it->callbackArg, n);
+			(*it->callback)(it->callbackArg, it->total);
 			jobList.erase(it++);
 		}
 	}

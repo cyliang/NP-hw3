@@ -31,7 +31,7 @@ Client::Client(int fd):
 	transferringList.pushReadJob(
 		sockfd,
 		recvBuffer,
-		maxBuf - 1,
+		maxBuf,
 		recvUsername,
 		this
 	);
@@ -43,7 +43,6 @@ void Client::recvUsername(void *arg, ssize_t n) {
 		delete cPtr;
 		return;
 	}
-	cPtr->recvBuffer[n] = '\0';
 
 	char username[100];
 	if(sscanf(cPtr->recvBuffer, "Username: %s", username) != 1) {
@@ -64,7 +63,7 @@ void Client::startRecvCmd() {
 	transferringList.pushReadJob(
 		sockfd,
 		recvBuffer,
-		maxBuf - 1,
+		maxBuf,
 		recvCmd, 
 		this
 	);
@@ -197,7 +196,7 @@ void Client::transferByAnotherPort(FileTransferringArg *arg) {
 	transferringList.pushWriteJob(
 		sockfd,
 		sendBuffer,
-		strlen(sendBuffer),
+		maxBuf,
 		finishSendCmd,
 		this
 	);

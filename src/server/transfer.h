@@ -23,6 +23,7 @@ private:
 		void *callbackArg;
 		void *buf;
 		size_t n;
+		ssize_t total;
 	};
 
 	void pushJob(Job::Type type, int fd, void *buf, size_t n, Callback callback, void *callbackArg);

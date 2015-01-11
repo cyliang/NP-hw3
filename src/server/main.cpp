@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 		if(transMaxFd > maxFd)
 			maxFd = transMaxFd;
 
-		select(maxFd, &rSet, &wSet, NULL, NULL);
+		select(maxFd + 1, &rSet, &wSet, NULL, NULL);
 		transferringList.checkDone(&rSet, &wSet);
 
 		/* Routinely checking */
