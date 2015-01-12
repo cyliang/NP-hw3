@@ -45,7 +45,6 @@ void Client::recvUsername(void *arg, ssize_t n) {
 	}
 
 	char username[100];
-	printf("User '%s' logged in.\n", cPtr->recvBuffer); fflush(stdout);
 	if(sscanf(cPtr->recvBuffer, "Username: %s", username) != 1) {
 		delete cPtr;
 		return;
@@ -72,7 +71,11 @@ void Client::startRecvCmd() {
 
 void Client::recvCmd(void *arg, ssize_t n) {
 	Client *cPtr = (Client *) arg;
-	cPtr->recvBuffer[n] = '\0';
+
+	if(n == 0) {
+		delete cPtr;
+		return;
+	}
 
 	char fileName[100];
 	size_t fileSize;

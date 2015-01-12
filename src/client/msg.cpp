@@ -23,6 +23,12 @@ list<string>::iterator Msg::pushStatic() {
 }
 
 void Msg::removeStatic(list<string>::iterator it) {
+	size_t pos = 0, oldpos = 0;
+	while((pos = it->find('\n', oldpos)) != string::npos) {
+		if(pos - oldpos > 0)
+			push(it->substr(oldpos, pos - oldpos));
+		oldpos = pos+1;
+	}
 	staticList.erase(it);
 	refresh();
 }

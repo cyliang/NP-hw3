@@ -25,8 +25,11 @@ Msg msg;
 
 static list<File *> fileList;
 static int sock_fd;
-static bool go_exit = false;
+static void go_exit();
+
 static void line_read(char *line);
+char **readline_complete_func(const char *text, int start, int end);
+const char *cmds[] = { "/put", "/sleep", "/exit" };
 
 int main(int argc, char *argv[]) {
 	/************************************/
@@ -64,7 +67,9 @@ int main(int argc, char *argv[]) {
 	/************************************/
 	/*   Select for readline & socket   */
 	/************************************/
+	rl_attempted_completion_function = readline_complete_func;
 	rl_callback_handler_install("", line_read);
+	signal(SIGINT, SIG_IGN);
 	char buf[maxBuf];
 	int stdin_fd = fileno(rl_instream);
 	fd_set r_set, w_set;
@@ -75,7 +80,7 @@ int main(int argc, char *argv[]) {
 	sprintf(buf, "Username: %s", argv[3]);
 	int n = write(sock_fd, buf, maxBuf);
 
-	while(!go_exit) {
+	while(1) {
 		int max_fd = (sock_fd > stdin_fd ? sock_fd : stdin_fd);
 		FD_ZERO(&r_set);
 		FD_ZERO(&w_set);
@@ -107,7 +112,7 @@ int main(int argc, char *argv[]) {
 			int n = read(sock_fd, buf, maxBuf);
 			if(n == 0) {
 				puts("Connection closed by server");
-				go_exit = true;
+				go_exit();
 				break;
 			}
 
@@ -128,14 +133,19 @@ int main(int argc, char *argv[]) {
 		msg.refresh();
 	}
 
+	return 0;
+}
+
+void go_exit() {
 	rl_callback_handler_remove();
 	close(sock_fd);
-	return 0;
+
+	exit(0);
 }
 
 void line_read(char *line) {
 	if(line == NULL || strncmp(line, "/exit", 5) == 0) {
-		go_exit = true;
+		go_exit();
 		return;
 	}
 

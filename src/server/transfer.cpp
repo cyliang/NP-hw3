@@ -46,7 +46,6 @@ int TransferringList::setCheckSet(fd_set *rSet, fd_set *wSet) {
 	for(list<Job>::iterator it = jobList.begin(); it != jobList.end(); ) {
 		if(fcntl(it->fd, F_GETFD) == -1) {
 			jobList.erase(it++);
-			puts("Job erased");
 			continue;
 		}
 		
@@ -80,7 +79,6 @@ void TransferringList::checkDone(fd_set *rSet, fd_set *wSet) {
 			++it;
 		} else {
 			/* Job has finished */
-			puts("Job finish");
 			(*it->callback)(it->callbackArg, it->total);
 			jobList.erase(it++);
 		}

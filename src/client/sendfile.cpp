@@ -65,11 +65,12 @@ bool SendFile::checkDone(fd_set *rSet, fd_set *wSet) {
 			close(sockfd);
 
 			setMsg();
+			msg.removeStatic(msgIt);
+
 			string s = "Upload ";
 			s += filename;
 			s += " complete!";
 			msg.push(s);
-			msg.removeStatic(msgIt);
 			return true;
 		}
 		setMsg();

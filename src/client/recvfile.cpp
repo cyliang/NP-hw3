@@ -10,6 +10,8 @@ extern Msg msg;
 RecvFile::RecvFile(const char *name, size_t size, sockaddr_in *addr, list<string>::iterator it) {
 	filename = name;
 	filesize = size;
+	fPtr = fopen(name, "wb");
+
 	doneCount = 0;
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	content = malloc(size);
@@ -38,23 +40,28 @@ bool RecvFile::checkDone(fd_set *rSet, fd_set *wSet) {
 			exit(1);
 		}
 
-		if(n != -1 && (doneCount += n) == filesize) {
-			FILE *f = fopen(filename.c_str(), "wb");
-			fwrite(content, 1, filesize, f);
-			fclose(f);
-
-			free(content);
-			close(sockfd);
-
+		if(n != -1) {
+			fwrite(content + doneCount, 1, n, fPtr);
+			fflush(fPtr);
+			doneCount += n;
 			setMsg();
-			string s = "Download ";
-			s += filename;
-			s += " complete!";
-			msg.push(s);
-			msg.removeStatic(msgIt);
-			return true;
+
+			if(doneCount == filesize) {
+				fclose(fPtr);
+
+				free(content);
+				close(sockfd);
+
+				setMsg();
+				msg.removeStatic(msgIt);
+
+				string s = "Download ";
+				s += filename;
+				s += " complete!";
+				msg.push(s);
+				return true;
+			}
 		}
-		setMsg();
 	}
 
 	return false;
