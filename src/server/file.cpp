@@ -122,13 +122,14 @@ void File::readCallback(void *arg, ssize_t n) {
 }
 
 void File::readFileFinish() {
-	if(timeToUse > 0) {
+	puts("READ FILE FINISH");
+/*	if(timeToUse > 0) {
 		timeToUse--;
 	} else {
 		waitFreeFiles.push_front(this);
 		waitFreeIt = waitFreeFiles.begin();
 		isFreeing = true;
-	}
+	}*/
 }
 
 void File::checkEachFree() {

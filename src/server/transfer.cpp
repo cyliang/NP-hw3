@@ -1,6 +1,7 @@
 #include "transfer.h"
 #include <fcntl.h>
 #include <unistd.h>
+#include <cstdio>
 using namespace std;
 
 TransferringList::TransferringList():
@@ -31,6 +32,7 @@ void TransferringList::pushJob(Job::Type type, int fd, void *buf, size_t n, Call
 	newJob.callbackArg = callbackArg;
 	newJob.buf = buf;
 	newJob.n = n;
+	newJob.total = 0;
 
 	int fflag = fcntl(fd, F_GETFL, 0);
 	fcntl(fd, F_SETFL, fflag | O_NONBLOCK);
@@ -44,6 +46,7 @@ int TransferringList::setCheckSet(fd_set *rSet, fd_set *wSet) {
 	for(list<Job>::iterator it = jobList.begin(); it != jobList.end(); ) {
 		if(fcntl(it->fd, F_GETFD) == -1) {
 			jobList.erase(it++);
+			puts("Job erased");
 			continue;
 		}
 		
@@ -77,6 +80,7 @@ void TransferringList::checkDone(fd_set *rSet, fd_set *wSet) {
 			++it;
 		} else {
 			/* Job has finished */
+			puts("Job finish");
 			(*it->callback)(it->callbackArg, it->total);
 			jobList.erase(it++);
 		}

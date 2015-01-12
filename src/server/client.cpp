@@ -45,6 +45,7 @@ void Client::recvUsername(void *arg, ssize_t n) {
 	}
 
 	char username[100];
+	printf("User '%s' logged in.\n", cPtr->recvBuffer); fflush(stdout);
 	if(sscanf(cPtr->recvBuffer, "Username: %s", username) != 1) {
 		delete cPtr;
 		return;
@@ -108,9 +109,9 @@ void Client::finishTransfer(void *arg, ssize_t n) {
 		ptr->client->user->clientPutFile(ptr->file, ptr->client);
 
 	close(ptr->sockfd);
+	delete ptr;
 
 	ptr->client->putFile();
-	free(ptr);
 }
 
 void Client::checkPullFile() {
@@ -123,7 +124,7 @@ void Client::pullFile() {
 	if(isSending || pullList.empty() || fileTransferring >= 5)
 		return;
 
-	for(list<File *>::reverse_iterator it = pullList.rbegin(); it != pullList.rend(); ++it) {
+	for(list<File *>::iterator it = pullList.begin(); it != pullList.end(); ++it) {
 		if((*it)->readFile()) {
 			FileTransferringArg *arg = new FileTransferringArg(FileTransferringArg::PULL, *it, this);
 
@@ -132,7 +133,7 @@ void Client::pullFile() {
 
 			transferByAnotherPort(arg);
 
-			pullList.erase(it.base());
+			pullList.erase(it);
 			return;
 		}
 	}

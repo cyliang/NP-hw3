@@ -23,11 +23,11 @@ void User::clientLogout(const list<Client *>::iterator &it) {
 
 void User::clientPutFile(File *file, Client *client) {
 	file->saveFileCommit(clientList.size() - 1);
-	fileList.push_front(file);
+	fileList.push_back(file);
 
 	for(list<Client *>::iterator it = clientList.begin(); it != clientList.end(); ++it) {
 		if(*it != client) {
-			(*it)->pullList.push_front(file);
+			(*it)->pullList.push_back(file);
 		}
 	}
 }
